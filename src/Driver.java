@@ -22,7 +22,7 @@ public class Driver
 	private Controller controller;
 	private Circuit circuit;
 	private Class selection = Wire.class;
-	private String path = "";
+	private String path = "untitled";
 	
 	public static void main(String[] args)
 	{
@@ -44,7 +44,7 @@ public class Driver
 		
 		addBindings();
 		
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> circuit.save()));
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> circuit.save(path)));
 	}
 	
 	private void addBindings()
@@ -97,10 +97,10 @@ public class Driver
 			}
 		};*/
 		
-		controller.bind(() -> circuit.save(),
+		controller.bind(() -> circuit.save(path),
 				new Action(KeyEvent.VK_CONTROL, State.PRESS, State.HOLD),
 				new Action(KeyEvent.VK_S, State.PRESS));
-		controller.bind(() -> circuit.open("test.file"),
+		controller.bind(() -> circuit = Circuit.open(path),
 				new Action(KeyEvent.VK_CONTROL, State.PRESS, State.HOLD),
 				new Action(KeyEvent.VK_O, State.PRESS));
 		controller.bind(() -> System.exit(0), KeyEvent.VK_ESCAPE, State.RELEASE);

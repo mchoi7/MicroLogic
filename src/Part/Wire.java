@@ -5,6 +5,7 @@ import Support.Drawable;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,9 @@ import java.util.Set;
 
 import static Support.Constants.*;
 
-public class Wire implements Drawable
+public class Wire implements Serializable, Drawable
 {
+	private static final long serialVersionUID = 1L;
 	private static final Wire empty = new Wire(0, 0);
 	Wire[] neighbors = {empty, empty, empty, empty};
 	private Set<Wire> open = new HashSet<>(4);
