@@ -47,14 +47,8 @@ public final class Controller implements KeyListener, MouseListener, MouseMotion
 	public void update()
 	{
 		bindings.forEach(binding -> binding.attempt(current));
-		if (!listening || true) // TODO:
-			current.putAll(next);
-		else
-		{
-			State regexState = current.getOrDefault(regex, State.FREE);
-			current.values().forEach(state -> state = State.FREE);
-			current.put(regex, regexState);
-		}
+		
+		current.putAll(next);
 		next.clear();
 		mouseLast = new Point(mouse);
 	}
@@ -164,7 +158,7 @@ public final class Controller implements KeyListener, MouseListener, MouseMotion
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e)
 	{
-		current.put(mScroll, e.getPreciseWheelRotation() > 0 ? State.PRESS : State.RELEASE);
+		current.put(mScroll, e.getPreciseWheelRotation() < 0 ? State.PRESS : State.RELEASE);
 		next.put(mScroll, State.FREE);
 		mouse = e.getPoint();
 	}

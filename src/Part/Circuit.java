@@ -77,43 +77,4 @@ public class Circuit implements Drawable, Serializable
 			g2d.setTransform(restore);
 		}
 	}
-	
-	public void save(String path)
-	{
-		try
-		{
-			if (new File(path).exists())
-				path+="("+LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH-mm-ss"))+")";
-			System.out.println(path);
-			FileOutputStream fos = new FileOutputStream(path);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(this);
-			oos.close();
-			System.out.println("Save to: "+path+" successful.");
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			System.err.println("Save to: "+path+" fail.");
-		}
-	}
-	
-	public static Circuit open(String path)
-	{
-		Circuit circuit = new Circuit();
-		try
-		{
-			FileInputStream fis = new FileInputStream(path);
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			circuit = (Circuit) ois.readObject();
-			ois.close();
-			System.out.println("Open from: "+path+" successful.");
-		}
-		catch (IOException | ClassNotFoundException e)
-		{
-			e.printStackTrace();
-			System.err.println("Open from: "+path+" fail.");
-		}
-		return circuit;
-	}
 }

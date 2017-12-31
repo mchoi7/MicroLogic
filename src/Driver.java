@@ -1,4 +1,5 @@
 import Control.Controller;
+import Control.FileHandler;
 import Control.GameFrame;
 import Control.GameThread;
 import Control.Keyboard.Action;
@@ -9,6 +10,7 @@ import Part.Wire;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
@@ -43,8 +45,6 @@ public class Driver
 		gThread.setDaemon(true);
 		
 		addBindings();
-		
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> circuit.save(path)));
 	}
 	
 	private void addBindings()
@@ -79,28 +79,36 @@ public class Driver
 				new Action(Controller.lClick, State.PRESS, State.HOLD),
 				new Action(KeyEvent.VK_SHIFT, State.HOLD));
 		
-		/*Runnable record = new Runnable() {
-			// runnable that takes parameter HERE
-			boolean start;
-			String record;
-			@Override
-			public void run()
-			{
-				start = !start;
-				if (start)
-				{
-					record = "";
-					controller.listen(KeyEvent.VK_ENTER);
-				}
-				else
-					record = controller.getLine();
-			}
-		};*/
-		
-		controller.bind(() -> circuit.save(path),
+		controller.bind(new Runnable()
+		                {
+			                private boolean state;
+			
+			                @Override
+			                public void run()
+			                {
+				                state = !state;
+				                if (state)
+				                {
+					                controller.listen(KeyEvent.VK_ENTER);
+					                System.out.println("Current Path: "+path);
+				                }
+				                else
+				                {
+					                path = controller.getLine();
+					                System.out.println("New Path: "+path);
+				                }
+			                }
+		                },
+				new Action(KeyEvent.VK_ENTER, State.RELEASE));
+		controller.bind(() -> FileHandler.save(circuit, path, false),
 				new Action(KeyEvent.VK_CONTROL, State.PRESS, State.HOLD),
+				new Action(KeyEvent.VK_SHIFT, State.PRESS, State.FREE),
 				new Action(KeyEvent.VK_S, State.PRESS));
-		controller.bind(() -> circuit = Circuit.open(path),
+		controller.bind(() -> FileHandler.save(circuit, path, true),
+				new Action(KeyEvent.VK_CONTROL, State.PRESS, State.HOLD),
+				new Action(KeyEvent.VK_SHIFT, State.PRESS, State.HOLD, State.RELEASE),
+				new Action(KeyEvent.VK_S, State.PRESS));
+		controller.bind(() -> circuit = FileHandler.open(circuit, path),
 				new Action(KeyEvent.VK_CONTROL, State.PRESS, State.HOLD),
 				new Action(KeyEvent.VK_O, State.PRESS));
 		controller.bind(() -> System.exit(0), KeyEvent.VK_ESCAPE, State.RELEASE);
